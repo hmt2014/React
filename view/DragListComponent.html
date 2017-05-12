@@ -20,12 +20,20 @@
             padding: 10px;
             box-sizing: border-box;
         }
+        ul{
+            list-style:none;
+            position: relative;
+        }
         .item{
-            color: red;
+            color: darkgray;
         }
         .item-mousedown{
             border: 1px solid black;
             background-color:red;
+        }
+        .item-drag{
+            border: 1px solid gray;
+            position: absolute;
         }
     </style>
 </head>
@@ -36,19 +44,38 @@
 <script type="text/babel">
     var Item = React.createClass({
         getInitialState:function(){
-            return {c:"item"};
+            return {c:"item", dragging: false};
         },
         handleMouseDown: function (event) {
-            //this.props.className = "mousedown";
-            alert(this.props.name);
-            this.setState({c:"item-mousedown"});
+            if(!this.state.dragging) {
+                this.setState({c: "item-mousedown"});
+            }
+        },
+        handleMouseUp: function(event){
+            if(!this.state.dragging){
+                this.setState({c: "item"});
+            }
+            this.setState({dragging: false});
+        },
+        handleMouseMove: function(event){
+            event.stopPropagation();
+            this.setState({c: "item-drag", dragging: true});
         },
         render: function(){
-           return (<li className={this.state.c} onMouseOver={this.handleMouseDown}>{this.props.name}</li>);
+           return (<li className={this.state.c} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} onMouseMove={this.handleMouseMove}>{this.props.name}</li>);
+        }
+    });
+    var ItemList = React.createClass({
+        render: function(){
+            var rows = [];
+            for (var i=0; i < 5; i++) {
+                rows.push(<Item name={i}/>);
+            }
+            return (<ul>{rows}</ul>);
         }
     });
     ReactDOM.render(
-            <Item name="111" className="item"/>,
+            <ItemList />,
         document.getElementById('dragList')
     );
 </script>
