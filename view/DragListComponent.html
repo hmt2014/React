@@ -44,32 +44,50 @@
 <script type="text/babel">
     var Item = React.createClass({
         getInitialState:function(){
-            return {c:"item", dragging: false};
+            return {c:"item", target: false};
+        },
+        sendSword: function (b) {
+            this.props.setDragState(b);
         },
         handleMouseDown: function (event) {
-            if(!this.state.dragging) {
-                this.setState({c: "item-mousedown"});
+            if(!this.props.getDragState()) {
+                this.setState({c: "item-mousedown", target: true});
+                this.sendSword(true);
             }
         },
         handleMouseUp: function(event){
-            if(!this.state.dragging){
+            if(this.props.getDragState()){
                 this.setState({c: "item"});
+                this.sendSword(false);
             }
-            this.setState({dragging: false});
         },
         handleMouseMove: function(event){
-            event.stopPropagation();
-            this.setState({c: "item-drag", dragging: true});
+            console.log(this.props.getDragState());
+            console.log(event.clientY);
+            console.log(this.offsetLeft);
+            if(this.props.getDragState() && this.state.target) {
+                this.setState({c: "item-drag"});
+            }
         },
         render: function(){
            return (<li className={this.state.c} onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} onMouseMove={this.handleMouseMove}>{this.props.name}</li>);
         }
     });
     var ItemList = React.createClass({
+        getInitialState: function(){
+            return {dragging: false};
+        },
+        getCurrentState: function(){
+            return this.state.dragging;
+        },
+        setDragState: function(b){
+            console.log("set dragging"+b);
+            this.setState({dragging: b});
+        },
         render: function(){
             var rows = [];
             for (var i=0; i < 5; i++) {
-                rows.push(<Item name={i}/>);
+                rows.push(<Item getDragState={this.getCurrentState} setDragState={this.setDragState} name={i}/>);
             }
             return (<ul>{rows}</ul>);
         }
