@@ -51,7 +51,7 @@
         },
         handleMouseDown: function (event) {
             if(!this.props.getDragState()) {
-                this.setState({c: "item-mousedown", target: true});
+                this.setState({c: "item-mousedown target", target: true});
                 this.sendSword(true);
             }
         },
@@ -62,11 +62,12 @@
             }
         },
         handleMouseMove: function(event){
-            console.log(this.props.getDragState());
-            console.log(event.clientY);
-            console.log(this.offsetLeft);
             if(this.props.getDragState() && this.state.target) {
-                this.setState({c: "item-drag"});
+                this.setState({c: "item-drag target"});
+                var Y = event.clientY;
+                var top = document.getElementById("dragList").offsetTop;
+                console.log("Y:"+Y+" top:"+top);
+                document.getElementsByClassName("target")[0].style.top = (Y-top) +"px";
             }
         },
         render: function(){
